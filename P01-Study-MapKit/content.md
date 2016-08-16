@@ -72,6 +72,7 @@ self.locateManage.startUpdatingLocation()//startUpdatingLocation
 ## Set a default zoom region for mapView :
 
 We set a default zoom region to our mapView. And then showsUserLocation
+
 ```
 let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -77.0167), 10000000, 10000000)
 self.mapView.setRegion(zoomRegion, animated: true)
@@ -151,6 +152,51 @@ extension ViewController : CLLocationManagerDelegate {
 
 Now, let's configure our annotationView and handle the annotation callback.
 
+First of all, let's configure our annotation view
+
+```
+func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    // we check to see if annotation is Annotation class, because we don't want to change userLocation annotation on mapView.
+    if annotation.isKind(of: Annotation.classForCoder()){
+      // if so, we try to dequeueReusableAnnotationView from MapView
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: "Annotation")
+        // if pinView == nil, that means MapView currently doesn't have any annotation withIdentifier "Annotation". So let's create an instance of MKAnnotationView and return it later.
+        if pinView == nil {
+            pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: "Annotation")
+            // CallOut allows user to tap on annotation
+            pinView?.canShowCallout = true
+            //configure the pinView
+            pinView?.rightCalloutAccessoryView = UIButton(type: UIButtonType.detailDisclosure)
+            pinView?.rightCalloutAccessoryView!.tintColor = UIColor.black
+
+
+        } else {
+          // if pinView exists, that means we can dequeueReusableAnnotationView from MapView with identifier "Annotation". Then we will just assign the annotation.
+            pinView?.annotation = annotation
+        }
+        // add the imageView to pinView so that we can customize the pinView
+        let imageView = UIImageView(image: UIImage(named: ""))
+        pinView!.leftCalloutAccessoryView = imageView
+        pinView?.image = UIImage(named: "mapAnnotation")
+        return pinView
+    }else{
+      // if the annotation is not Annotation class, it's user location. we don't want to return any MKAnnotation. just return default nil.
+        return nil
+    }
+}
+```
+
+Secondly, let's do something when user taps on annotation button
+
+```
+func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    // we get the title on the annotation. and then perform "toDetail" Segue.
+    let annotation = view.annotation as! Annotation
+    self.performSegue(withIdentifier: "toDetail", sender: annotation.title)
+
+}
+```
+
 In the end, your MKMapViewDelegate Implementation will looks like this :
 
 ```
@@ -216,4 +262,11 @@ if segue.identifier == "toDetail"{
 
 # Conclusion
 
-The link to the [finished project](https://github.com/hao44le/MapKit-Tutorial-FinishedProject) to get started.
+The link to the [finished project](https://github.com/hao44le/MapKit-Tutorial-FinishedProject).
+
+- The difference between iOS MapView and Google Map
+- How to setup MapKit in a new iOS project
+- How to get user location efficiently from MapKit
+- How to add & configure annotations in MapView
+- How to handle callback on annotations.
+- How to pass data to other view controller
