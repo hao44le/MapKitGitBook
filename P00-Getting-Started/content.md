@@ -15,7 +15,6 @@ In this tutorial we will discuss best practices for using iOS MapKit framework. 
 ## Cons of Google Map
 
 - Google Map makes your app at least 20MB bigger! Unlike Google Maps, MapKit is native to iOS, which means your app size will stay the same regardless of using MapKit technology.
-- Lack of stability in comparison to MapKit.
 - MapKit has a much better integration with CoreLocation and CoreAnimation.
 
 ## When to use Google Map ?
