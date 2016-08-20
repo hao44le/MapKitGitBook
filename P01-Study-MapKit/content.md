@@ -71,8 +71,8 @@ self.locateManage.delegate = self
 We set a default zoom region to our mapView. And then showsUserLocation
 
 ```
-        let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -97.0167), 14000000, 14000000)
-        mapView.setRegion(zoomRegion, animated: true)
+let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -97.0167), 14000000, 14000000)
+mapView.setRegion(zoomRegion, animated: true)
 mapView.delegate = self
 //Don't worry if you get error in the above line, because we haven't implement the MKMapViewDelegate yet!
 //Show user location
