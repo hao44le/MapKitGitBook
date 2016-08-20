@@ -19,8 +19,6 @@ We use Annotation.Swift file to represent our Annotation class.
 Copy and paste the following code into your Annotation.Swift file.
 
 ```
-import UIKit
-import CoreLocation
 import MapKit
 class Annotation: NSObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D
@@ -66,7 +64,6 @@ We assign the locateManage delegate to ourself and startUpdatingLocation
 //-------------CLLocationManager-------------
 self.locateManage.delegate = self
 //Don't worry if you get error in the above line, because we haven't implement the CLLocationManagerDelegate yet!
-self.locateManage.startUpdatingLocation()//startUpdatingLocation
 ```
 
 ## Set a default zoom region for mapView :
@@ -74,13 +71,12 @@ self.locateManage.startUpdatingLocation()//startUpdatingLocation
 We set a default zoom region to our mapView. And then showsUserLocation
 
 ```
-let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -77.0167), 10000000, 10000000)
-self.mapView.setRegion(zoomRegion, animated: true)
+let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -97.0167), 14000000, 14000000)
+mapView.setRegion(zoomRegion, animated: true)
 mapView.delegate = self
 //Don't worry if you get error in the above line, because we haven't implement the MKMapViewDelegate yet!
-mapView.mapType = MKMapType.standard
 //Show user location
-self.mapView.showsUserLocation = true
+mapView.showsUserLocation = true
 ```
 
 ## Add all of our annotations :
@@ -90,42 +86,51 @@ The following code adds annotations to our mapView
 ```
 //Add annotations
 for name in names {
-    let coordinate = CLLocationCoordinate2DMake(name.value.0, name.value.1)
+    let coordinate = CLLocationCoordinate2DMake(name.value.latitude, name.value.longitude)
     let annotation = Annotation(coordinate: coordinate,title:name.key)
     self.mapView.addAnnotation(annotation)
 }
 ```
 
-## In the end, you viewDidLoad method will look like this :
+## In the end, your viewDidLoad, zoomToRegion, addAnnotations, setupLocationManager methods will look like this :
 ```
-override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        mapView.showsUserLocation = true
+        mapView.delegate = self
+        
+        setupLocationManager()
+        addAnnotations()
+        zoomToRegion()
+    }
+    
+    // MARK:- Setup CLLocationManager
+    
+    func setupLocationManager() {
         if CLLocationManager.locationServicesEnabled() {
             locateManage.requestWhenInUseAuthorization()
         }
 
-        //-------------CLLocationManager-------------
-        self.locateManage.delegate = self
-        self.locateManage.startUpdatingLocation()//startUpdatingLocation
-
-
-
-        let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -77.0167), 10000000, 10000000)
-        self.mapView.setRegion(zoomRegion, animated: true)
-        mapView.showsUserLocation = true
-        mapView.delegate = self
-        mapView.mapType = MKMapType.standard
-        //Show user location
-        self.mapView.showsUserLocation = true
-
-        //Add annotations
+        locateManage.delegate = self
+    }
+    
+    // MARK:- Add annotations
+    
+    func addAnnotations() {
         for name in names {
-            let coordinate = CLLocationCoordinate2DMake(name.value.0, name.value.1)
+            let coordinate = CLLocationCoordinate2DMake(name.value.latitude, name.value.longitude)
             let annotation = Annotation(coordinate: coordinate,title:name.key)
-            self.mapView.addAnnotation(annotation)
+            mapView.addAnnotation(annotation)
         }
-}
+    }
+    
+    // MARK:- ZoomToRegion
+    
+    func zoomToRegion() {
+        let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -97.0167), 14000000, 14000000)
+        mapView.setRegion(zoomRegion, animated: true)
+    }
 ```
 
 # Implement CLLocationManagerDelegate
@@ -134,14 +139,14 @@ override func viewDidLoad() {
 self.locateManage.startUpdatingLocation()//startUpdatingLocation
 ```
 
-Remember we call startUpdatingLocation in the ViewDidLoad ? Once iOS starts to update location, didUpdateLocations in CLLocationManagerDelegate will get called.
+Once iOS starts to update location, didUpdateLocations in CLLocationManagerDelegate will get called.
 
 ```
 extension ViewController : CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let newLoca = locations.last {
             let newCoordinate = newLoca.coordinate
-            self.mapView.centerCoordinate = newCoordinate
+            mapView.centerCoordinate = newCoordinate
             manager.stopUpdatingLocation()//stop updating.save power
         }
     }
@@ -192,7 +197,7 @@ Secondly, let's do something when user taps on annotation button
 func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
     // we get the title on the annotation. and then perform "toDetail" Segue.
     let annotation = view.annotation as! Annotation
-    self.performSegue(withIdentifier: "toDetail", sender: annotation.title)
+    performSegue(withIdentifier: "toDetail", sender: annotation.title)
 
 }
 ```
@@ -227,7 +232,7 @@ extension ViewController : MKMapViewDelegate {
     }
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         let annotation = view.annotation as! Annotation
-        self.performSegue(withIdentifier: "toDetail", sender: annotation.title)
+        performSegue(withIdentifier: "toDetail", sender: annotation.title)
 
     }
 }
@@ -239,7 +244,7 @@ extension ViewController : MKMapViewDelegate {
 Add the following code to your findMyLocation method. Once user clicks on the button, we start to updating location.
 
 ```
-self.locateManage.startUpdatingLocation()
+locateManage.startUpdatingLocation()
 ```
 
 ![myLocation](assets/myLocation.png "myLocation")
