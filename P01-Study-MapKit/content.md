@@ -139,7 +139,7 @@ for name in names {
 self.locateManage.startUpdatingLocation()//startUpdatingLocation
 ```
 
-Remember we call startUpdatingLocation in the ViewDidLoad ? Once iOS starts to update location, didUpdateLocations in CLLocationManagerDelegate will get called.
+Once iOS starts to update location, didUpdateLocations in CLLocationManagerDelegate will get called.
 
 ```
 extension ViewController : CLLocationManagerDelegate {
