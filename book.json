@@ -1,7 +1,8 @@
 {
     "plugins": [
         "swiftype",
-        "lilypond-highlight"
+        "lilypond-highlight",
+        "ace"
     ],
     "pluginsConfig": {}
 }
