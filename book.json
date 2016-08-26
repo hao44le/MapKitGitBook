@@ -1,6 +1,7 @@
 {
     "plugins": [
-        "swiftype"
+        "swiftype",
+        "lilypond-highlight"
     ],
     "pluginsConfig": {}
 }
