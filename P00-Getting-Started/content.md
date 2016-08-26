@@ -1,7 +1,7 @@
----
-title: "Get started with iOS MapKit!"
-slug: getting-started
----
+
+# "Get started with iOS MapKit!"
+
+
 
 The Map Kit framework lets you embed a fully functional map interface into your app. The map support provided by this framework includes many features of the Maps app in both iOS and OS X. You can display standard street-level map information, satellite imagery, or a combination of the two. You can zoom, pan, and pitch the map programmatically, display 3D buildings, and annotate the map with custom information. The Map Kit framework also provides automatic support for the touch events that let users zoom and pan the map.
 
@@ -42,8 +42,11 @@ Icons are from icons8.com. Images are from unsplash.com
 ## Location Data
 
 
-``` typealias coordinate = (latitude:Double, longitude: Double)
+```
+typealias coordinate = (latitude:Double, longitude: Double)
     
- let names:[String:coordinate] = ["newyork":(40.7128,-74.0059),"seattle":(47.6062,-122.3321),"sf":(37.7786,-122.3893),"texas":(31.9686,-99.9018)]```
+let names:[String:coordinate] = ["newyork":(40.7128,-74.0059),"seattle":(47.6062,-122.3321),"sf":(37.7786,-122.3893),"texas":(31.9686,-99.9018)]
+ 
+ ```
 
 
