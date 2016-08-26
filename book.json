@@ -1,8 +1,21 @@
 {
-    "plugins": [
-        "swiftype",
-        "lilypond-highlight",
-        "ace"
-    ],
-    "pluginsConfig": {}
+	"plugins": [
+		"ga",
+		"youtubex",
+		"sectionx",
+		"mcqx",
+		"fbqx",
+		"ace",
+		"spoiler",
+		"facebook"
+	],
+	"pluginsConfig": {
+		"ga": {
+			"token": "UA-63734627-1"
+		},
+		"facebook": {
+			"appKey": "your-app-id"
+		}
+	},
+	"gitbook": ">=3.0.0"
 }
