@@ -41,13 +41,13 @@ Icons are from icons8.com. Images are from unsplash.com
 
 ## Location Data
 
-{%ace edit=true, lang='swift'%}
-```
 
+```
+{%ace edit=true, lang='swift'%}
 typealias coordinate = (latitude:Double, longitude: Double)
     
 let names:[String:coordinate] = ["newyork":(40.7128,-74.0059),"seattle":(47.6062,-122.3321),"sf":(37.7786,-122.3893),"texas":(31.9686,-99.9018)]
  
  ```
-
+{%endace%}
 
