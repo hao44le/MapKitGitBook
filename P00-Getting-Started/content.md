@@ -31,19 +31,19 @@ So, what's inside the starer project ?
 
 ## Basic configuration on StoryBoard
 
-![StoryBoard Setup](assets/storyboard.png "StoryBoard Setup")
+![StoryBoard Setup](assets/storyboard.png)
 
 ## Image Asset
 
 Icons are from icons8.com. Images are from unsplash.com
 
-![Image Asset](assets/images.png "Image Asset")
+![Image Asset](assets/images.png)
 
 ## Location Data
 
-```
- typealias coordinate = (latitude:Double, longitude: Double)
-    
- let names:[String:coordinate] = ["newyork":(40.7128,-74.0059),"seattle":(47.6062,-122.3321),"sf":(37.7786,-122.3893),"texas":(31.9686,-99.9018)]
 
-```
+``` typealias coordinate = (latitude:Double, longitude: Double)
+    
+ let names:[String:coordinate] = ["newyork":(40.7128,-74.0059),"seattle":(47.6062,-122.3321),"sf":(37.7786,-122.3893),"texas":(31.9686,-99.9018)]```
+
+
