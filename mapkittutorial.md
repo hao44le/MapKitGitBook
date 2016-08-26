@@ -1,52 +1,277 @@
+---
+title: "Let's study the MapKit!"
+slug: study-mapkit
+---
 
-# "Get started with iOS MapKit!"
-
-
-
-The Map Kit framework lets you embed a fully functional map interface into your app. The map support provided by this framework includes many features of the Maps app in both iOS and OS X. You can display standard street-level map information, satellite imagery, or a combination of the two. You can zoom, pan, and pitch the map programmatically, display 3D buildings, and annotate the map with custom information. The Map Kit framework also provides automatic support for the touch events that let users zoom and pan the map.
-
-In this tutorial we will discuss best practices for using iOS MapKit framework. In this page, We'll cover:
-
-1. Why not Google Map ?
-2. Download Starter Project
-
-# Why not Google Map ?
-
-## Cons of Google Map
-
-- Google Map makes your app at least 20MB bigger! Unlike Google Maps, MapKit is native to iOS, which means your app size will stay the same regardless of using MapKit technology.
-- MapKit has a much better integration with CoreLocation and CoreAnimation.
-
-## When to use Google Map ?
-
-- If you want to enable street-view.
-- If you want to use google location search.
-- Or you just love Google Maps.
-
-# Download the starter project
-
-You should download [starter project](https://github.com/hao44le/MapKit-Tutorial-Beginner) to get started.
-
-So, what's inside the starer project ?
-
-## Basic configuration on StoryBoard
-
-![StoryBoard Setup](assets/storyboard.png)
-
-## Image Asset
-
-Icons are from icons8.com. Images are from unsplash.com
-
-![Image Asset](assets/images.png)
-
-## Location Data
-
+In order to allow our app to request for user location, we have to add following key-value pair to our info.plist.
 
 ```
-typealias coordinate = (latitude:Double, longitude: Double)
+Key : Privacy - Location When In Use Usage Description
+Type : String
+Value : Find places in SF
+```
+
+![info.plist](assets/info.png "key-value")
+
+# Create our Annotation.Swift class
+
+We use Annotation.Swift file to represent our Annotation class.
+Copy and paste the following code into your Annotation.Swift file.
+
+```
+import MapKit
+class Annotation: NSObject, MKAnnotation {
+    var coordinate: CLLocationCoordinate2D
+    var title: String?
+
+    init(coordinate: CLLocationCoordinate2D, title: String) {
+        self.coordinate = coordinate
+        self.title = title
+    }
+}
+```
+
+# Create a CLLocationManager global variable
+
+Create a CLLocationManager global variable inside ViewController.Swift file.
+
+```
+let locateManage = CLLocationManager()
+```
+
+![locationManager](assets/locationManager.png "locationManager")
+
+# Setup UI in viewDidLoad
+
+Add all the following codes to your viewDidLoad method
+
+## Request to get user location :
+
+If locationServicesEnabled, we will request WhenInUseAuthorization from user.
+
+```
+if CLLocationManager.locationServicesEnabled() {
+    locateManage.requestWhenInUseAuthorization()
+}
+
+```
+
+## Setup location manager :
+
+We assign the locateManage delegate to ourself and startUpdatingLocation
+
+```
+//-------------CLLocationManager-------------
+self.locateManage.delegate = self
+//Don't worry if you get error in the above line, because we haven't implement the CLLocationManagerDelegate yet!
+```
+
+## Set a default zoom region for mapView :
+
+We set a default zoom region to our mapView. And then showsUserLocation
+
+```
+let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -97.0167), 14000000, 14000000)
+mapView.setRegion(zoomRegion, animated: true)
+mapView.delegate = self
+//Don't worry if you get error in the above line, because we haven't implement the MKMapViewDelegate yet!
+//Show user location
+mapView.showsUserLocation = true
+```
+
+## Add all of our annotations :
+
+The following code adds annotations to our mapView
+
+```
+//Add annotations
+for name in names {
+    let coordinate = CLLocationCoordinate2DMake(name.value.latitude, name.value.longitude)
+    let annotation = Annotation(coordinate: coordinate,title:name.key)
+    self.mapView.addAnnotation(annotation)
+}
+```
+
+## In the end, your viewDidLoad, zoomToRegion, addAnnotations, setupLocationManager methods will look like this :
+```
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        mapView.showsUserLocation = true
+        mapView.delegate = self
+        
+        setupLocationManager()
+        addAnnotations()
+        zoomToRegion()
+    }
     
-let names:[String:coordinate] = ["newyork":(40.7128,-74.0059),"seattle":(47.6062,-122.3321),"sf":(37.7786,-122.3893),"texas":(31.9686,-99.9018)]
- 
- ```
+    // MARK:- Setup CLLocationManager
+    
+    func setupLocationManager() {
+        if CLLocationManager.locationServicesEnabled() {
+            locateManage.requestWhenInUseAuthorization()
+        }
+
+        locateManage.delegate = self
+    }
+    
+    // MARK:- Add annotations
+    
+    func addAnnotations() {
+        for name in names {
+            let coordinate = CLLocationCoordinate2DMake(name.value.latitude, name.value.longitude)
+            let annotation = Annotation(coordinate: coordinate,title:name.key)
+            mapView.addAnnotation(annotation)
+        }
+    }
+    
+    // MARK:- ZoomToRegion
+    
+    func zoomToRegion() {
+        let zoomRegion = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2D(latitude: 38.8833, longitude: -97.0167), 14000000, 14000000)
+        mapView.setRegion(zoomRegion, animated: true)
+    }
+```
+
+# Implement CLLocationManagerDelegate
+
+```
+self.locateManage.startUpdatingLocation()//startUpdatingLocation
+```
+
+Once iOS starts to update location, didUpdateLocations in CLLocationManagerDelegate will get called.
+
+```
+extension ViewController : CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let newLoca = locations.last {
+            let newCoordinate = newLoca.coordinate
+            mapView.centerCoordinate = newCoordinate
+            manager.stopUpdatingLocation()//stop updating.save power
+        }
+    }
+}
+```
+
+# Implement MKMapViewDelegate
+
+Now, let's configure our annotationView and handle the annotation callback.
+
+First of all, let's configure our annotation view
+
+```
+func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    // we check to see if annotation is Annotation class, because we don't want to change userLocation annotation on mapView.
+    if annotation.isKind(of: Annotation.classForCoder()){
+      // if so, we try to dequeueReusableAnnotationView from MapView
+        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: "Annotation")
+        // if pinView == nil, that means MapView currently doesn't have any annotation withIdentifier "Annotation". So let's create an instance of MKAnnotationView and return it later.
+        if pinView == nil {
+            pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: "Annotation")
+            // CallOut allows user to tap on annotation
+            pinView?.canShowCallout = true
+            //configure the pinView
+            pinView?.rightCalloutAccessoryView = UIButton(type: UIButtonType.detailDisclosure)
+            pinView?.rightCalloutAccessoryView!.tintColor = UIColor.black
 
 
+        } else {
+          // if pinView exists, that means we can dequeueReusableAnnotationView from MapView with identifier "Annotation". Then we will just assign the annotation.
+            pinView?.annotation = annotation
+        }
+        // add the imageView to pinView so that we can customize the pinView
+        let imageView = UIImageView(image: UIImage(named: ""))
+        pinView!.leftCalloutAccessoryView = imageView
+        pinView?.image = UIImage(named: "mapAnnotation")
+        return pinView
+    }else{
+      // if the annotation is not Annotation class, it's user location. we don't want to return any MKAnnotation. just return default nil.
+        return nil
+    }
+}
+```
+
+Secondly, let's do something when user taps on annotation button
+
+```
+func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    // we get the title on the annotation. and then perform "toDetail" Segue.
+    let annotation = view.annotation as! Annotation
+    performSegue(withIdentifier: "toDetail", sender: annotation.title)
+
+}
+```
+
+In the end, your MKMapViewDelegate Implementation will looks like this :
+
+```
+extension ViewController : MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation.isKind(of: Annotation.classForCoder()){
+            var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: "Annotation")
+            if pinView == nil {
+                pinView = MKAnnotationView(annotation: annotation, reuseIdentifier: "Annotation")
+                pinView?.canShowCallout = true
+                pinView?.rightCalloutAccessoryView = UIButton(type: UIButtonType.detailDisclosure)
+                pinView?.rightCalloutAccessoryView!.tintColor = UIColor.black
+
+
+            } else {
+                pinView?.annotation = annotation
+            }
+            let imageView = UIImageView(image: UIImage(named: ""))
+
+
+            pinView!.leftCalloutAccessoryView = imageView
+
+            pinView?.image = UIImage(named: "mapAnnotation")
+            return pinView
+        }else{
+            return nil
+        }
+    }
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        let annotation = view.annotation as! Annotation
+        performSegue(withIdentifier: "toDetail", sender: annotation.title)
+
+    }
+}
+
+```
+
+# Add logic to findMyLocation
+
+Add the following code to your findMyLocation method. Once user clicks on the button, we start to updating location.
+
+```
+locateManage.startUpdatingLocation()
+```
+
+![myLocation](assets/myLocation.png "myLocation")
+
+# Pass the data to DetailViewController
+
+Add the following code to your prepare(for segue : UIStoryboardSegue, sender: Any?) method, so that we can pass the data from ViewController to DetailViewController.
+
+We first check if identifier == 'toDetail', it so we get the name from the sender, and then assign it to properties inside DetailViewController
+
+```
+if segue.identifier == "toDetail"{
+            let name = sender as! String
+            let destinationViewController = segue.destination as! DetailViewController
+            destinationViewController.titleText = name
+            destinationViewController.annotationImage = UIImage(named: name)
+}
+```
+![prepareForSegue](assets/prepare.png "prepareForSegue")
+
+# Conclusion
+
+The link to the [finished project](https://github.com/hao44le/MapKit-Tutorial-FinishedProject).
+
+- The difference between iOS MapView and Google Map
+- How to setup MapKit in a new iOS project
+- How to get user location efficiently from MapKit
+- How to add & configure annotations in MapView
+- How to handle callback on annotations.
+- How to pass data to other view controller
