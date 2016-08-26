@@ -1,51 +1,55 @@
-# gitbook-plugin-ace
 
-This page is implemented using the two plugins developed by me: ```gitbook-plugin-ace```. Please check the [Github repo](https://github.com/ymcatar/gitbook-plugin-ace) for the syntax and changelog of the plugin.
+# "Get started with iOS MapKit!"
 
-## Example 1
 
-Here is the "Hello World" program of C language. The code editor in this section is set to be editable.
 
-{%ace edit=true, lang='c_cpp'%}
-#include <stdio.h>
+The Map Kit framework lets you embed a fully functional map interface into your app. The map support provided by this framework includes many features of the Maps app in both iOS and OS X. You can display standard street-level map information, satellite imagery, or a combination of the two. You can zoom, pan, and pitch the map programmatically, display 3D buildings, and annotate the map with custom information. The Map Kit framework also provides automatic support for the touch events that let users zoom and pan the map.
 
-int main(){
-	int i;
+In this tutorial we will discuss best practices for using iOS MapKit framework. In this page, We'll cover:
 
-	for(i=0; i<10; i++)
-		printf("Hello World.");
+1. Why not Google Map ?
+2. Download Starter Project
 
-	return 0;
-}
-{%endace%}
+# Why not Google Map ?
 
-## Example 2
+## Cons of Google Map
 
-And a javascript code right here:
+- Google Map makes your app at least 20MB bigger! Unlike Google Maps, MapKit is native to iOS, which means your app size will stay the same regardless of using MapKit technology.
+- MapKit has a much better integration with CoreLocation and CoreAnimation.
 
-{%ace edit=false, lang='javascript'%}
-var message = 'H e l l o W o r l d';
-var split = message.split(' ').join('');
-console.log(message);
-console.log("testing {{test}}");
-{%endace%}
+## When to use Google Map ?
 
-## Example 3
+- If you want to enable street-view.
+- If you want to use google location search.
+- Or you just love Google Maps.
 
-And a piece of javascript code with wrong syntax, but with syntax validation disabled.
+# Download the starter project
 
-{%ace edit=false, lang='javascript', check=false%}
-var test = [
-	somethingIsWrong: 'withThis';
-];
-{%endace%}
+You should download [starter project](https://github.com/hao44le/MapKit-Tutorial-Beginner) to get started.
 
-## Example 4
+So, what's inside the starer project ?
 
-Custom theme support is also added.
+## Basic configuration on StoryBoard
 
-{%ace edit=false, lang='javascript', theme='monokai'%}
-var test = a => (
-    `ES6 is amazing. $${a}`
-);
-{%endace%}
+![StoryBoard Setup](assets/storyboard.png)
+
+## Image Asset
+
+Icons are from icons8.com. Images are from unsplash.com
+
+![Image Asset](assets/images.png)
+
+## Location Data
+
+
+
+{%ace edit=true, lang='swift'%}
+
+typealias coordinate = (latitude:Double, longitude: Double)
+    
+let names:[String:coordinate] = ["newyork":(40.7128,-74.0059),"seattle":(47.6062,-122.3321),"sf":(37.7786,-122.3893),"texas":(31.9686,-99.9018)]
+ 
+ {%endace%}
+ 
+
+
