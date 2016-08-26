@@ -43,6 +43,15 @@ Icons are from icons8.com. Images are from unsplash.com
 
 
 
+{%ace edit=false, lang='javascript'%}
+var message = 'H e l l o W o r l d';
+var split = message.split(' ').join('');
+console.log(message);
+console.log("testing {{test}}");
+{%endace%}
+
+
+
 {%ace edit=true, lang='swift'%}
 
 typealias coordinate = (latitude:Double, longitude: Double)
